@@ -164,7 +164,7 @@ describe('model', () => {
         });
     });
 
-    describe('extractLoginToken', () => {
+    describe('validateLoginToken', () => {
         beforeEach(done => {
             token.create({
                 password: 'secret',
@@ -193,7 +193,7 @@ describe('model', () => {
         });
 
         it('should extract login token', done => {
-            model.extractLoginToken(this.token)
+            model.validateLoginToken(this.token)
             .then(decodedToken => {
                 chai.assert.deepEqual(
                     decodedToken,
@@ -207,7 +207,7 @@ describe('model', () => {
         });
 
         it('should validate that token has correct type', done => {
-            model.extractLoginToken(this.invalidToken)
+            model.validateLoginToken(this.invalidToken)
             .catch(err => {
                 chai.assert.strictEqual(err.message, 'Invalid type');
                 done();

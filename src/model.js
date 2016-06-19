@@ -55,7 +55,7 @@ module.exports = fig => {
         }));
     };
 
-    self.extractLoginToken = tokenString => token.decode({
+    self.validateLoginToken = tokenString => token.decode({
         password: tokenSecret,
         token: tokenString
     })
