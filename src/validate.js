@@ -9,7 +9,7 @@ module.exports = (rules, data) => {
     let errors = new Validator(rules, { strict: true }).test(data);
     return _.isEmpty(errors) ?
         Q() : Q.reject(new ValidationError(400, {
-            message: 'A validation error occured',
+            message: 'A validation error occurred',
             errors: errors
         }));
 };

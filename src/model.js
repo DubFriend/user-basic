@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('underscore');
+const Q = require('q');
 const ValidationError = require('./error');
 const validate = require('./validate');
 const password = require('./password');
@@ -42,8 +43,8 @@ module.exports = fig => {
         return validate(schema(), fig)
         .then(() => dataModel.findByUsername(fig.username))
         .then(userData => userData || Q.reject(loginError))
-        .then(userData => password.verify(fig.password, userData.password))
-        .then(isPasswordValid => isPasswordValid || Q.reject(loginError))
+        .then(userData => password.compare(fig.password, userData.password))
+        .then(isMatch => isMatch || Q.reject(loginError))
         .then(() => token.create({
             password: tokenSecret,
             expiresInSeconds: loginExpirationSeconds,
@@ -54,15 +55,17 @@ module.exports = fig => {
         }));
     };
 
-    self.extractLoginToken = token => token.decode({
+    self.extractLoginToken = tokenString => token.decode({
         password: tokenSecret,
-        token: token
+        token: tokenString
     })
     .then(decryptedToken => decryptedToken.type === 'login' ?
         decryptedToken : Q.reject(new ValidationError(400, {
-            message: 'Invalid token type'
+            message: 'Invalid type'
         }))
     );
+
+    self.findByUsername = dataModel.findByUsername;
 
     return self;
 };

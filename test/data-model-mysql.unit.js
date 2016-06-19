@@ -12,7 +12,6 @@ const connection = mysql.createPool({
     database: 'user-basic'
 });
 const sql = require('mysql-wrap-production')(connection);
-const password = require('../src/password');
 
 const dataModel = require('../src/data-model-mysql')({
     table: 'user',

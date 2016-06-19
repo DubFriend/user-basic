@@ -1,6 +1,6 @@
 'use strict';
 
-let _ = require('lodash');
+let _ = require('underscore');
 let Q = require ('q');
 let jwt = require('jsonwebtoken');
 let validate = require('./validate');
@@ -36,4 +36,5 @@ exports.decode = fig => validate({
             resolve(decoded);
         }
     }
-)));
+)))
+.then(decoded => _.omit(decoded, 'iat', 'exp'));
