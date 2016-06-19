@@ -1,0 +1,13 @@
+mysql:
+  container_name: mysql
+  build: /home/vagrant/infra/container/mysql
+  ports:
+    - "3306:3306"
+  environment:
+    - MYSQL_USER=username
+    - MYSQL_PASSWORD=password
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_DATABASE=user-basic
+  volumes:
+    - /home/vagrant/data/user-basic/mysql:/var/user-basic/mysql
+  restart: always

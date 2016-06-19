@@ -1,0 +1,15 @@
+{
+    "mailFrom": {
+        "user": "foo@gmail.com",
+        "pass": "secret"
+    },
+    "smtp": {
+        "host": "mail.gandi.net",
+        "port": 587,
+        "auth": {
+            "user": "foo@mail.com",
+            "pass": "secret"
+        }
+    },
+    "mailTo": "bar@mail.com"
+}

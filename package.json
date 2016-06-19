@@ -1,0 +1,33 @@
+{
+  "name": "user-basic",
+  "version": "0.0.0",
+  "description": "Basic User Functionality",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:DubFriend/user-basic.git"
+  },
+  "author": "Brian Detering",
+  "license": "MIT",
+  "homepage": "https://github.com/DubFriend/user-basic",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.5.3"
+  },
+  "dependencies": {
+    "bcrypt": "^0.8.7",
+    "jsonwebtoken": "^7.0.1",
+    "mysql": "^2.11.1",
+    "mysql-wrap-production": "^0.7.0",
+    "nodemailer": "^2.4.2",
+    "q": "^1.4.1",
+    "the_validator": "^1.7.4",
+    "underscore": "^1.8.3"
+  }
+}
