@@ -220,7 +220,10 @@ describe('model', () => {
 
     describe('login', () => {
         it('should return a valid login token', done => {
-            model.login(this.user.username, 'password')
+            model.login({
+                usernameOrEmail: this.user.username,
+                password: 'password'
+            })
             .then(loginToken => token.decode({
                 password: 'secret',
                 token: loginToken
@@ -235,7 +238,10 @@ describe('model', () => {
         });
 
         it('should validate that user exists with username', done => {
-            model.login('wrong', 'password')
+            model.login({
+                usernameOrEmail: 'wrong',
+                password: 'password'
+            })
             .catch(err => {
                 this.assertLoginError(err);
                 done();
@@ -243,7 +249,10 @@ describe('model', () => {
         });
 
         it('should validate that password is correct', done => {
-            model.login(this.user.username, 'wrong')
+            model.login({
+                usernameOrEmail: this.user.username,
+                password: 'wrong'
+            })
             .catch(err => {
                 this.assertLoginError(err);
                 done();
@@ -258,7 +267,10 @@ describe('model', () => {
         });
 
         it('should login with email', done => {
-            this.model.login(this.user.email, 'password')
+            this.model.login({
+                usernameOrEmail: this.user.email,
+                password: 'password'
+            })
             .then(token => {
                 chai.assert.ok(token);
                 done();
@@ -266,7 +278,10 @@ describe('model', () => {
         });
 
         it('should login with username', done => {
-            this.model.login(this.user.username, 'password')
+            this.model.login({
+                usernameOrEmail: this.user.username,
+                password: 'password'
+            })
             .then(token => {
                 chai.assert.ok(token);
                 done();
@@ -274,7 +289,10 @@ describe('model', () => {
         });
 
         it('should validate that user exists with email', done => {
-            model.login('wrong@mail.com', 'password')
+            model.login({
+                usernameOrEmail: 'wrong@mail.com',
+                password: 'password'
+            })
             .catch(err => {
                 this.assertLoginError(err);
                 done();
@@ -282,7 +300,10 @@ describe('model', () => {
         });
 
         it('should validate that password is correct', done => {
-            model.login(this.user.email, 'wrong')
+            model.login({
+                usernameOrEmail: this.user.email,
+                password: 'wrong'
+            })
             .catch(err => {
                 this.assertLoginError(err);
                 done();

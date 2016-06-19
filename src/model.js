@@ -52,18 +52,22 @@ module.exports = fig => {
         }
     )));
 
-    self.login = (usernameOrEmail, passwordString) => {
+    self.login = fig => {
         let loginError = new ValidationError(400, {
             message: 'Invalid username or password'
         });
 
-        return dataModel.findByField('username', usernameOrEmail)
+        return validate({
+            usernameOrEmail: ['required', 'type:string'],
+            password: ['required', 'type:string']
+        }, fig)
+        .then(() => dataModel.findByField('username', fig.usernameOrEmail))
         .then(userData => !userData && emailField && emailField !== 'username' ?
-            dataModel.findByField(emailField, usernameOrEmail) : userData
+            dataModel.findByField(emailField, fig.usernameOrEmail) : userData
         )
         .then(userData => userData || Q.reject(loginError))
         .then(userData => {
-            return password.compare(passwordString, userData.password)
+            return password.compare(fig.password, userData.password)
             .then(isMatch => isMatch || Q.reject(loginError))
             .then(() => token.create({
                 password: tokenSecret,
@@ -113,10 +117,14 @@ module.exports = fig => {
         });
     }
 
-    self.resetPasswordWithToken = fig => token.decode({
+    self.resetPasswordWithToken = fig => validate({
+        token: ['required', 'type:string'],
+        newPassword: ['required', 'type:string']
+    }, fig)
+    .then(() => token.decode({
         password: tokenSecret,
         token: fig.token
-    })
+    }))
     .then(tokenData => tokenData.type === 'password-reset' ?
         tokenData.username : Q.reject(new ValidationError(400, {
             message: 'Invalid type'
