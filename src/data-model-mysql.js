@@ -15,10 +15,18 @@ module.exports = fig => {
             _.extend(data, { isConfirmed: Boolean(data.isConfirmed) })
     );
 
-    self.findByUsername = username => sql.selectOne(
-        table, { username: username }
-    )
-    .then(parse);
+    self.findByField = (field, value) => {
+        const q = {};
+        q[field] = value;
+        return sql.selectOne(table, q)
+        .then(parse);
+    };
+
+    self.setConfirmedByUsername = fig => sql.update(
+        table,
+        { isConfirmed: fig.isConfirmed },
+        { username: fig.username }
+    );
 
     self.insert = fig => sql.insert(table, fig);
 

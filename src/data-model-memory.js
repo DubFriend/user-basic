@@ -6,20 +6,29 @@ const Q = require('q');
 module.exports = () => {
     let self = {};
 
-    let data = {};
+    let data = [];
 
-    self.findByUsername = username => Q(data[username]);
+    self.findByField = (field, value) => {
+        const q = {};
+        q[field] = value;
+        return Q(_.findWhere(data, q));
+    };
+
     self.insert = fig => {
-        if(!data[fig.username]) {
-            data[fig.username] = fig;
-        }
-        else {
-            return Q.reject(new Error('Cannot insert: unique constraint'));
-        }
+        data.push(fig);
+        return Q();
     };
 
     self.clearData = () => {
-        data = {};
+        data = [];
+    };
+
+    self.setConfirmedByUsername = fig => {
+        for(let i = 0; i < data.length; i += 1) {
+            if(data[i].username === fig.username) {
+                data[i].isConfirmed = fig.isConfirmed;
+            }
+        }
     };
 
     return self;

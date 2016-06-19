@@ -18,6 +18,7 @@ const dataModel = require('../src/data-model-mysql')({
     connection: connection
 });
 
+
 describe('dataModelMysql', () => {
     beforeEach(done => {
         this.data = () => ({
@@ -50,9 +51,9 @@ describe('dataModelMysql', () => {
         });
     });
 
-    describe('findByUsername', () => {
+    describe('findByField', () => {
         it('should find by username success', done => {
-            dataModel.findByUsername(this.user.username)
+            dataModel.findByField('username', this.user.username)
             .then(userData => {
                 chai.assert.deepEqual(
                     userData,
@@ -63,9 +64,35 @@ describe('dataModelMysql', () => {
         });
 
         it('should find by username fail', done => {
-            dataModel.findByUsername('wrong')
+            dataModel.findByField('username', 'wrong')
             .then(userData => {
                 chai.assert.notOk(userData);
+                done();
+            }).done();
+        });
+    });
+
+    describe('setConfirmedByUsername', () => {
+        it('should set isConfirmed', done => {
+            dataModel.setConfirmedByUsername({
+                username: this.user.username,
+                isConfirmed: true
+            })
+            .then(() => sql.selectOne('user', { username: this.user.username }))
+            .then(userData => {
+                chai.assert.ok(userData.isConfirmed);
+                done();
+            }).done();
+        });
+
+        it('should not set for wrong username', done => {
+            dataModel.setConfirmedByUsername({
+                username: 'wrong',
+                isConfirmed: true
+            })
+            .then(() => sql.selectOne('user', { username: this.user.username }))
+            .then(userData => {
+                chai.assert.notOk(userData.isConfirmed);
                 done();
             }).done();
         });

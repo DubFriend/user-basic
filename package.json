@@ -1,6 +1,6 @@
 {
   "name": "user-basic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Basic User Functionality",
   "main": "index.js",
   "scripts": {
