@@ -28,6 +28,12 @@ module.exports = fig => {
         { username: fig.username }
     );
 
+    self.setPasswordByUsername = fig => sql.update(
+        table,
+        { password: fig.password },
+        { username: fig.username }
+    );
+
     self.insert = fig => sql.insert(table, fig);
 
     return self;

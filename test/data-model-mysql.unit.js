@@ -97,4 +97,18 @@ describe('dataModelMysql', () => {
             }).done();
         });
     });
+
+    describe('setPasswordByUsername', () => {
+        it('should set password', done => {
+            dataModel.setPasswordByUsername({
+                username: this.user.username,
+                password: 'new-password'
+            })
+            .then(() => sql.selectOne('user', { username: this.user.username }))
+            .then(userData => {
+                chai.assert.strictEqual(userData.password, 'new-password');
+                done();
+            }).done();
+        });
+    });
 });

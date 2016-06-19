@@ -4,11 +4,11 @@ module.exports = function (grunt) {
     grunt.initConfig({
         mochaTest: {
             unit: {
-                src: ['test/**/*unit.js', '!test/confirmation-model-email.unit.js']
+                src: ['test/**/*unit.js', '!test/notification-model-email.unit.js']
             },
             mail: {
                 options: { timeout: 10000 },
-                src: ['test/confirmation-model-email.unit.js']
+                src: ['test/notification-model-email.unit.js']
             }
         },
 

@@ -23,14 +23,7 @@ module.exports = fig => {
         to: resp[0],
         subject: resp[1],
         html: resp[2]
-    }))
-
-    // mail.send({
-    //     from: from,
-    //     to: fig.to,
-    //     subject: subjectTemplate(fig),
-    //     html: bodyTemplate(fig)
-    // });
+    }));
 
     return self;
 };

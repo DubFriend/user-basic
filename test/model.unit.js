@@ -376,6 +376,47 @@ describe('model', () => {
         });
     });
 
+    describe('sendPasswordReset', () => {
+        beforeEach(done => {
+            this.calledSend = false;
+            this.model = createModel({
+                passwordResetModel: {
+                    send: fig => {
+                        chai.assert.deepEqual(fig.user, this.user);
+                        return token.decode({
+                            password: 'secret',
+                            token: fig.token
+                        })
+                        .then(decodedToken => {
+                            chai.assert.deepEqual(decodedToken, {
+                                type: 'password-reset',
+                                username: this.user.username
+                            });
+                            this.calledSend = true;
+                        });
+                    }
+                }
+            });
+            done();
+        });
+
+        it('should send password reset with token', done => {
+            this.model.sendPasswordReset(this.user.username)
+            .then(() => {
+                chai.assert.ok(this.calledSend);
+                done();
+            }).done();
+        });
+
+        it('should validate that user exists', done => {
+            this.model.sendPasswordReset('wrong')
+            .catch(err => {
+                chai.assert.strictEqual(err.message, 'User not found');
+                done();
+            }).done();
+        });
+    });
+
     describe('sendConfirmation', () => {
         beforeEach(done => {
             this.calledSend = false;
@@ -424,6 +465,47 @@ describe('model', () => {
             .then(() => this.model.sendConfirmation(this.user.username))
             .catch(err => {
                 chai.assert.strictEqual(err.message, 'User is already confirmed');
+                done();
+            }).done();
+        });
+    });
+
+    describe('resetPasswordWithToken', () => {
+        beforeEach(done => {
+            token.create({
+                password: 'secret',
+                expiresInSeconds: 3,
+                content: {
+                    type: 'password-reset',
+                    username: this.user.username
+                }
+            })
+            .then(tokenData => {
+                this.passwordResetToken = tokenData;
+                done();
+            }).done();
+        });
+
+        it('should reset password', done => {
+            model.resetPasswordWithToken({
+                token: this.passwordResetToken,
+                newPassword: 'new-pass'
+            })
+            .then(() => dataModel.findByField('username', this.user.username))
+            .then(userData => password.compare('new-pass', userData.password))
+            .then(isMatch => {
+                chai.assert.ok(isMatch);
+                done();
+            }).done();
+        });
+
+        it('should validate token type', done => {
+            model.resetPasswordWithToken({
+                token: this.invalidToken,
+                newPassword: 'new-pass'
+            })
+            .catch(err => {
+                chai.assert.strictEqual(err.message, 'Invalid type');
                 done();
             }).done();
         });

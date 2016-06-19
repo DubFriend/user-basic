@@ -3,7 +3,7 @@
 const Q = require('q');
 const chai = require('chai');
 const config = require('../test-config');
-const confirmationModel = require('../src/confirmation-model-email')({
+const notificationModel = require('../src/notification-model-email')({
     from: config.smtp.auth.user,
     smtp: config.smtp,
     getToField: fig => Q(fig.user.to),
@@ -11,10 +11,10 @@ const confirmationModel = require('../src/confirmation-model-email')({
     subjectTemplate: fig => Q('user-basic: ' + fig.user.foo)
 });
 
-describe('confirmationModelEmail', () => {
+describe('notificatModelEmail', () => {
     describe('send', () => {
         it('should send an email', done => {
-            confirmationModel.send({
+            notificationModel.send({
                 token: 'token',
                 user: { foo: 'bar', to: config.mailTo }
             })

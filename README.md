@@ -5,7 +5,7 @@ Basic User Functionality. Register, Login, Password Reset, Email Confirmation, e
 ## Instantiation
 
 ```javascript
-const mysql      = require('mysql');
+const mysql = require('mysql');
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'me',
@@ -20,7 +20,7 @@ const dataModel = userBasic.dataModelMysql({
     connection: connection
 });
 
-const confirmationModel = userBasic.confirmationModelEMail({
+const confirmationModel = userBasic.notificationModelEMail({
     from: 'noreply@app.com',
     smtp: {
         host: 'mail.foo.com',
@@ -35,10 +35,27 @@ const confirmationModel = userBasic.confirmationModelEMail({
     subjectTemplate: fig => Q('Please Confirm your Email: ' + fig.user.firstName)
 });
 
+const passwordResetModel = userBasic.notificationModelEMail({
+    from: 'noreply@app.com',
+    smtp: {
+        host: 'mail.foo.com',
+        port: 587,
+        auth: {
+            user: 'foo@mail.com',
+            pass: 'secret'
+        }
+    },
+    getToField: fig => Q(fig.user.email),
+    bodyTemplate: fig => Q('<h1>Hello</h1><pre>' + JSON.stringify(fig, null , 2) + '</pre>'),
+    subjectTemplate: fig => Q('Password Reset Requested: ' + fig.user.firstName)
+});
+
 const model = userBasic.model({
     dataModel: dataModel,
     // confirmationModel is optional
     confirmationModel: confirmationModel,
+    // passwordResetModel is optional
+    passwordResetModel: passwordResetModel,
     tokenSecret: 'secret',
     loginExpirationSeconds: 60 * 60,
     passwordResetExpirationSeconds: 60 * 5,
@@ -53,6 +70,8 @@ logic will assume there is no email. You can also set the emailField to "usernam
 to give the username field the added responsibility of the user's email.
 
 **!Note** If a confirmationModel is not supplied the **sendConfirmation** method will not work
+
+**!Note** If a passwordResetModel is not supplied the **sendPasswordReset** method will not work
 
 --------------------------------
 
@@ -72,7 +91,7 @@ model.register({
 
 ```javascript
 model.login({
-    username: 'bob',
+    usernameOrEmail: 'bob',
     password: 'secret'
 })
 .then(token => {});
@@ -94,12 +113,38 @@ model.findByUsername('bob')
 .then(user => {});
 ```
 
+#### Send Confirmation notification to User
+
+```javascript
+model.sendConfirmation('bob')
+.then(() => {});
+```
+
 #### Confirm with Token
 
 Takes a confirmation token, and sets the user's account to confirmed.
 
 ```javascript
 model.confirmWithToken('abcde')
+.then(() => {});
+```
+
+#### Send Password Reset request to User
+
+```javascript
+model.sendPasswordReset('bob')
+.then(() => {});
+```
+
+#### Reset Password with Token
+
+Takes a password reset token, and new password, and resets the user's password.
+
+```javascript
+model.resetPasswordWithToken({
+    token: 'abcde',
+    newPassword: 'new-password'
+})
 .then(() => {});
 ```
 
@@ -129,8 +174,8 @@ Should handle the **username** field and the **email** field if it has been set
 during the model instantiation.
 
 ```javascript
-dataModel.findByField('username', 'bob')
-.then(userData => {});
+dataModel.findByField('fieldName', 'fieldValue')
+.then(user => {});
 ```
 
 #### setConfirmedByUsername
@@ -143,15 +188,26 @@ dataModel.setConfirmedByUsername({
 .then(() => {});
 ```
 
+#### setPasswordByUsername
+
+```javascript
+dataModel.setPasswordByUsername({
+    username: 'bob',
+    password: 'password'
+})
+.then(() => {});
+```
+
 ------------------------
 
-## Confirmation Model
+## Notification Model
 
-The confirmation model is dependency injected, and you can supply your own confirmation model (for example to send confirmation by text message)
+The notification model is dependency injected as the **confirmationModel** and **passwordResetModel**.
+You can supply your own notification model (for example to send notifications by text message)
 
-An email confirmation model is allready supplied (see "instantiation" in these docs)
+An email notification model is already supplied (see "instantiation" in these docs)
 
-If you with to implement your own confirmation model you must implement the following interface
+If you with to implement your own notification model you must implement the following interface
 
 ## send
 

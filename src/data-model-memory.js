@@ -23,13 +23,22 @@ module.exports = () => {
         data = [];
     };
 
-    self.setConfirmedByUsername = fig => {
+    const setFieldByUsername = fig => {
         for(let i = 0; i < data.length; i += 1) {
             if(data[i].username === fig.username) {
-                data[i].isConfirmed = fig.isConfirmed;
+                data[i][fig.field] = fig[fig.field];
             }
         }
+        return Q();
     };
+
+    self.setConfirmedByUsername = fig => setFieldByUsername(_.extend(
+        _.clone(fig), { field: 'isConfirmed' }
+    ));
+
+    self.setPasswordByUsername = fig => setFieldByUsername(_.extend(
+        _.clone(fig), { field: 'password' }
+    ));
 
     return self;
 };

@@ -12,6 +12,7 @@ module.exports = fig => {
 
     const dataModel = fig.dataModel;
     const confirmationModel = fig.confirmationModel;
+    const passwordResetModel = fig.passwordResetModel;
     const tokenSecret = fig.tokenSecret;
     const loginExpirationSeconds = fig.loginExpirationSeconds || 60 * 60;
     const passwordResetExpirationSeconds = fig.passwordResetExpirationSeconds || 60 * 5;
@@ -90,6 +91,44 @@ module.exports = fig => {
     if(emailField) {
         self.findByEmail = _.partial(dataModel.findByField, emailField);
     }
+
+    if(passwordResetModel) {
+        self.sendPasswordReset = username => dataModel.findByField('username', username)
+        .then(userData => userData || Q.reject(new ValidationError(400, {
+            message: 'User not found'
+        })))
+        .then(userData => {
+            return token.create({
+                password: tokenSecret,
+                expiresInSeconds: passwordResetExpirationSeconds,
+                content: {
+                    type: 'password-reset',
+                    username: userData.username
+                }
+            })
+            .then(tokenData => passwordResetModel.send({
+                token: tokenData,
+                user: userData
+            }));
+        });
+    }
+
+    self.resetPasswordWithToken = fig => token.decode({
+        password: tokenSecret,
+        token: fig.token
+    })
+    .then(tokenData => tokenData.type === 'password-reset' ?
+        tokenData.username : Q.reject(new ValidationError(400, {
+            message: 'Invalid type'
+        }))
+    )
+    .then(username => {
+        return password.hash(fig.newPassword)
+        .then(hashedPassword => dataModel.setPasswordByUsername({
+            username: username,
+            password: hashedPassword
+        }));
+    });
 
     if(confirmationModel) {
         self.sendConfirmation = username => dataModel.findByField('username', username)
