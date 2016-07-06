@@ -221,7 +221,7 @@ describe('model', () => {
     describe('login', () => {
         it('should return a valid login token', done => {
             model.login({
-                usernameOrEmail: this.user.username,
+                username: this.user.username,
                 password: 'password'
             })
             .then(loginToken => token.decode({
@@ -239,7 +239,7 @@ describe('model', () => {
 
         it('should validate that user exists with username', done => {
             model.login({
-                usernameOrEmail: 'wrong',
+                username: 'wrong',
                 password: 'password'
             })
             .catch(err => {
@@ -250,7 +250,7 @@ describe('model', () => {
 
         it('should validate that password is correct', done => {
             model.login({
-                usernameOrEmail: this.user.username,
+                username: this.user.username,
                 password: 'wrong'
             })
             .catch(err => {
@@ -289,18 +289,19 @@ describe('model', () => {
         });
 
         it('should validate that user exists with email', done => {
-            model.login({
+            this.model.login({
                 usernameOrEmail: 'wrong@mail.com',
                 password: 'password'
             })
             .catch(err => {
+                console.log(JSON.stringify(err.toJSON(), null, 2));
                 this.assertLoginError(err);
                 done();
             }).done();
         });
 
         it('should validate that password is correct', done => {
-            model.login({
+            this.model.login({
                 usernameOrEmail: this.user.email,
                 password: 'wrong'
             })
