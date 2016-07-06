@@ -24,7 +24,6 @@ module.exports = fig => {
 
     const schema = () => {
         let s = {
-            // username: ['required', 'type:string'],
             password: ['required', 'type:string']
         };
 
